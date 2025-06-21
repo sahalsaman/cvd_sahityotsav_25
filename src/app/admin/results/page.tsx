@@ -21,11 +21,13 @@ interface Result {
   t2_team?: string;
 }
 
+interface ICompetitions { name: string; resultAdded: boolean }
 interface Category {
   _id: string;
   category: string;
-  competitions: { name: string; published: boolean }[];
+  competitions: ICompetitions[];
 }
+
 
 interface Team {
   _id: string;
@@ -66,10 +68,10 @@ export default function ResultPage() {
     const res = await fetch(`/api/category?userId=${userId}`);
     const data = await res.json();
   
-    const filtered = data.map((cat: any) => ({
+    const filtered = data.map((cat:Category) => ({
       ...cat,
-      competitions: cat.competitions.filter((comp: any) => !comp.resultAdded),
-    })).filter((cat: any) => cat.competitions.length > 0); // remove empty categories
+      competitions: cat.competitions.filter((comp: ICompetitions) => !comp.resultAdded),
+    })).filter((cat: Category) => cat.competitions?.length > 0); // remove empty categories
   
     setCategories(filtered);
   };
