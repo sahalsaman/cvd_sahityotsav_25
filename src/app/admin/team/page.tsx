@@ -17,9 +17,9 @@ export default function TeamListPage() {
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
   const [editData, setEditData] = useState({ team: ''});
   const router = useRouter(); 
-   const userId = localStorage.getItem('cvdsahiAuth');
-
+  let userId:string|null=''
   useEffect(() => {
+     userId = localStorage.getItem('cvdsahiAuth');
     if (!userId) {
       router.push('/admin/login');
     } else {

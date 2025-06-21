@@ -27,17 +27,17 @@ export default function Admin() {
   const [teamPoints, setTeamPoints] = useState(0);
   const [totalResult, setTotalResult] = useState(0);
   const [publishedResults, setPublishedResults] = useState(0);
-  const userId = localStorage.getItem('cvdsahiAuth');
-
+ 
   useEffect(() => {
+    const userId = localStorage.getItem('cvdsahiAuth');
     if (!userId) {
       router.push('/admin/login');
     } else {
-      fetchData();
+      fetchData(userId);
     }
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (userId:string) => {
     try {
       const [teamRes, resultRes] = await Promise.all([
         fetch(`/api/team?userId=${userId}`),

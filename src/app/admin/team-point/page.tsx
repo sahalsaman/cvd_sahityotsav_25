@@ -16,9 +16,9 @@ export default function TeamPointPage() {
   const [editData, setEditData] = useState<Record<string, number>>({});
   const [newTotalResult, setNewTotalResult] = useState('');
   const router = useRouter();
-  const userId = typeof window !== 'undefined' ? localStorage.getItem('cvdsahiAuth') : '';
-
+ let userId:string|null=''
   useEffect(() => {
+     userId = localStorage.getItem('cvdsahiAuth');
     if (!userId) {
       router.push('/admin/login');
     } else {

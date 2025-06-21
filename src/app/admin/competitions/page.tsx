@@ -20,7 +20,6 @@ export default function CategoryCompetitionPage() {
   const [editingComp, setEditingComp] = useState<{ catId: string; index: number } | null>(null);
   const [editCompName, setEditCompName] = useState('');
 
-  const userId = typeof window !== 'undefined' ? localStorage.getItem('cvdsahiAuth') : '';
 
   const fetchCategories = async () => {
     const res = await fetch(`/api/category?userId=${userId}`);
@@ -28,7 +27,9 @@ export default function CategoryCompetitionPage() {
     setCategories(data);
   };
 
+  let userId:string|null=''
   useEffect(() => {
+     userId = localStorage.getItem('cvdsahiAuth');
     fetchCategories();
   }, []);
 

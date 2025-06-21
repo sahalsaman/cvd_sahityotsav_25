@@ -47,11 +47,10 @@ export default function ResultPage() {
     f_name: '',
     f_team: '',
   });
-
-  const userId = typeof window !== 'undefined' ? localStorage.getItem('cvdsahiAuth') : '';
   const router = useRouter();
-
+  let userId:string|null=''
   useEffect(() => {
+     userId = localStorage.getItem('cvdsahiAuth');
     if (!userId) router.push('/admin/login');
     fetchResults();
     fetchCategories();
