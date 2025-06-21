@@ -5,7 +5,7 @@ import mongoose, { Schema } from 'mongoose';
 const CompetitionSchema = new Schema(
   {
     name: { type: String, required: true },
-    published: { type: Boolean, default: false},
+    resultAdded: { type: Boolean, default: false},
   },
   { _id: false }
 );

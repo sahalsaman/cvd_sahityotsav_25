@@ -32,7 +32,7 @@ export async function POST(request) {
 
   if (matchedUser) {
     // Don't return password in the response
-    const { password, ...safeUser } = matchedUser;
+    const { ...safeUser } = matchedUser;
     return Response.json(
       { success: true, message: "Login successful", user: safeUser },
       { status: 200 }

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 interface Competition {
   name: string;
-  published: boolean;
+  resultAdded: boolean;
 }
 
 interface Category {
@@ -44,7 +44,7 @@ export default function CategoryCompetitionPage() {
   };
 
   const handleDeleteCategory = async (id: string, competitions: Competition[]) => {
-    const hasPublished = competitions.some((c) => c.published);
+    const hasPublished = competitions.some((c) => c.resultAdded);
     const hasAny = competitions.length > 0;
     if (hasPublished || hasAny) return;
 
@@ -121,7 +121,7 @@ export default function CategoryCompetitionPage() {
       {/* Categories */}
       <div className="grid md:grid-cols-3 gap-5">
         {categories.map((cat) => {
-          const hasPublished = cat.competitions.some((c) => c.published);
+          const hasPublished = cat.competitions.some((c) => c.resultAdded);
           const hasCompetitions = cat.competitions.length > 0;
           return (
             <div key={cat._id} className="border rounded-lg shadow-md">
@@ -188,7 +188,7 @@ export default function CategoryCompetitionPage() {
                       ) : (
                         <>
                           <span>
-                            {comp.name} {comp.published && <span className="text-green-500">(Published)</span>}
+                            {comp.name} {comp.resultAdded && <span className="text-green-500">(Published)</span>}
                           </span>
                           <div className="flex gap-2">
                             <button
@@ -200,7 +200,7 @@ export default function CategoryCompetitionPage() {
                             >
                               Edit
                             </button>
-                           {!comp.published&& <button
+                           {!comp.resultAdded&& <button
                               onClick={() => handleDeleteCompetition(cat._id, comp.name)}
                               className="text-sm text-red-500 hover:underline"
                             >

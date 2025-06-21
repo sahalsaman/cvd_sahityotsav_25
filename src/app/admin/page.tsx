@@ -26,12 +26,12 @@ export default function Admin() {
         fetch(`/api/result?userId=${userId}`),
       ]);
       const teams = await teamRes.json();
-      const results = await resultRes.json();
-
+      const result = await resultRes.json();
+      const published= result.filter((item:any)=>item.publish===true)
       setTeamCount(teams.length);
-      setTeamPoints(0);
-      setTotalResult(0);
-      setPublishedResults(0);
+      setTeamPoints(teams[0].totalResult);
+      setTotalResult(result.length);
+      setPublishedResults(published.length);
     } catch (err) {
       console.error("Error loading dashboard data:", err);
     }

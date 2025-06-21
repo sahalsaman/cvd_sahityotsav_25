@@ -8,6 +8,7 @@ interface Result {
   category: string;
   compotition: string;
   resultNumber: string;
+  publish?: boolean;
   f_name: string;
   f_team: string;
   s_name?: string;
@@ -64,8 +65,15 @@ export default function ResultPage() {
   const fetchCategories = async () => {
     const res = await fetch(`/api/category?userId=${userId}`);
     const data = await res.json();
-    setCategories(data);
+  
+    const filtered = data.map((cat: any) => ({
+      ...cat,
+      competitions: cat.competitions.filter((comp: any) => !comp.resultAdded),
+    })).filter((cat: any) => cat.competitions.length > 0); // remove empty categories
+  
+    setCategories(filtered);
   };
+  
 
   const fetchTeams = async () => {
     const res = await fetch(`/api/team?userId=${userId}`);
@@ -91,6 +99,12 @@ export default function ResultPage() {
     fetchResults();
   };
 
+  const handlePublish = async (id: string, status: string) => {
+    if (!confirm('Publish this result?')) return;
+    await fetch(`/api/result?id=${id}&&publish=${status}`, { method: 'PUT' });
+    fetchResults();
+  };
+
   const openEditModal = (result: Result) => {
     setFormData(result);
     setEditId(result._id!);
@@ -102,7 +116,14 @@ export default function ResultPage() {
       <div className="flex justify-between mb-4">
         <h1 className="text-xl font-bold">Result Management</h1>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {setShowModal(true); setFormData({
+            category: '',
+            compotition: '',
+            resultNumber: '',
+            f_name: '',
+            f_team: '',
+          });
+            setEditId(null);}}
           className="bg-blue-600 text-white px-4 py-2 rounded"
         >
           Add Result
@@ -131,13 +152,18 @@ export default function ResultPage() {
               <td className="p-2">{res.s_name} ({res.s_team})</td>
               <td className="p-2">{res.t_name} ({res.t_team})</td>
               <td className="p-2">
-                <button
-                  onClick={() => handleDelete(res._id!)}
+                {res.publish ? <button
+                  onClick={() => handlePublish(res._id!, "false")}
+                  className="text-green-600 text-sm mr-2"
+                >
+                  Unublish
+                </button> : <button
+                  onClick={() => handlePublish(res._id!, "true")}
                   className="text-green-600 text-sm mr-2"
                 >
                   Publish
-                </button>
-                <button
+                </button>}
+               {!res.publish && <><button
                   onClick={() => openEditModal(res)}
                   className="text-blue-600 text-sm mr-2"
                 >
@@ -148,7 +174,7 @@ export default function ResultPage() {
                   className="text-red-600 text-sm"
                 >
                   Delete
-                </button>
+                </button></>}
               </td>
             </tr>
           ))}
@@ -159,8 +185,8 @@ export default function ResultPage() {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow p-6 w-full max-w-xl">
             <h2 className="text-lg font-bold mb-4">{editId ? 'Edit' : 'Add'} Result</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <select
+            <div className="grid md:grid-cols-3 gap-4 mb-5">
+              {editId&&formData.category?<div>Category: {formData.category}</div>:<select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value, compotition: '' })}
                 className="border p-2 rounded"
@@ -169,8 +195,8 @@ export default function ResultPage() {
                 {categories.map((cat) => (
                   <option key={cat._id} value={cat.category}>{cat.category}</option>
                 ))}
-              </select>
-
+              </select>}
+              {editId&&formData.compotition?<div>Compotition: {formData.compotition}</div>:
               <select
                 value={formData.compotition}
                 onChange={(e) => setFormData({ ...formData, compotition: e.target.value })}
@@ -180,7 +206,7 @@ export default function ResultPage() {
                 {categories.find(c => c.category === formData.category)?.competitions.map((comp, i) => (
                   <option key={i} value={comp.name}>{comp.name}</option>
                 ))}
-              </select>
+              </select>}
 
               <input
                 type="text"
@@ -189,14 +215,18 @@ export default function ResultPage() {
                 onChange={(e) => setFormData({ ...formData, resultNumber: e.target.value })}
                 className="border p-2 rounded"
               />
-
-              <input
-                type="text"
-                placeholder="First Name"
-                value={formData.f_name}
-                onChange={(e) => setFormData({ ...formData, f_name: e.target.value })}
-                className="border p-2 rounded"
-              />
+              </div>
+               <div className="grid grid-cols-2 gap-4">
+              <div className="flex w-full items-end justify-between gap-4">
+                <span className='text-2xl  '>1.</span>
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={formData.f_name}
+                  onChange={(e) => setFormData({ ...formData, f_name: e.target.value })}
+                  className="border p-2 rounded w-full"
+                />
+              </div>
 
               <select
                 value={formData.f_team}
@@ -208,14 +238,16 @@ export default function ResultPage() {
                   <option key={team._id} value={team.team}>{team.team}</option>
                 ))}
               </select>
-
+              <div className="flex w-full items-end justify-between gap-4">
+                <span className='text-2xl  '>2.</span>
               <input
                 type="text"
                 placeholder="Second Name"
                 value={formData.s_name || ''}
                 onChange={(e) => setFormData({ ...formData, s_name: e.target.value })}
-                className="border p-2 rounded"
+                className="border p-2 rounded w-full"
               />
+              </div>
 
               <select
                 value={formData.s_team || ''}
@@ -227,14 +259,16 @@ export default function ResultPage() {
                   <option key={team._id} value={team.team}>{team.team}</option>
                 ))}
               </select>
-
+              <div className="flex w-full items-end justify-between gap-4">
+                <span className='text-2xl  '>3.</span>
               <input
                 type="text"
                 placeholder="Third Name"
                 value={formData.t_name || ''}
                 onChange={(e) => setFormData({ ...formData, t_name: e.target.value })}
-                className="border p-2 rounded"
+                className="border p-2 rounded w-full"
               />
+              </div>
 
               <select
                 value={formData.t_team || ''}

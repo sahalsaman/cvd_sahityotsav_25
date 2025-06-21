@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import TeamModel from "../../../../models/Team";
-import connectMongoDB from "../../../../database/db";
 
 
 // GET all teams or by userId
 export async function GET(request) {
-  await connectMongoDB();
+ 
   const userId = request.nextUrl.searchParams.get("userId");
 
   try {
@@ -19,7 +18,7 @@ export async function GET(request) {
 
 // POST - Add a new team
 export async function POST(request) {
-  await connectMongoDB();
+ 
   const body = await request.json();
 
   try {
@@ -32,7 +31,7 @@ export async function POST(request) {
 
 // PUT - Update team by id (pass id as query param)
 export async function PUT(request) {
-  await connectMongoDB();
+ 
   const id = request.nextUrl.searchParams.get("id");
   const body = await request.json();
 
@@ -50,7 +49,7 @@ export async function PUT(request) {
 
 // DELETE - Delete team by id (pass id as query param)
 export async function DELETE(request) {
-  await connectMongoDB();
+ 
   const id = request.nextUrl.searchParams.get("id");
 
   if (!id) {

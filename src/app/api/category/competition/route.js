@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import connectMongoDB from '../../../../../database/db';
 import CategoryModel from "../../../../../models/Category"
 
 
@@ -13,7 +12,7 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Missing data' }, { status: 400 });
   }
 
-  await connectMongoDB();
+ 
   const cat = await CategoryModel.findById(categoryId);
   if (!cat) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
@@ -32,7 +31,7 @@ export async function PUT(req) {
     return NextResponse.json({ error: 'Missing data' }, { status: 400 });
   }
 
-  await connectMongoDB();
+ 
 
   const category = await CategoryModel.findById(id);
   if (!category) return NextResponse.json({ error: 'Category not found' }, { status: 404 });
