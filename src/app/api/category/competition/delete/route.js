@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 
 import CategoryModel from "../../../../../../models/Category"
 
+import connectMongoDB from "../../../../../database/db";
+
 export async function POST(req) {
   const url = new URL(req.url);
   const categoryId = url.searchParams.get('id');
@@ -12,7 +14,7 @@ export async function POST(req) {
   }
 
  
-
+   await connectMongoDB()
   const category = await CategoryModel.findById(categoryId);
   if (!category) return NextResponse.json({ error: 'Category not found' }, { status: 404 });
 

@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const TeamSchema = new Schema({
-  userId: { type: String, required: true },
+  userId: { type: String },
   team: { type: String },
   point: { type: Number, default: 0 },
   totalResult: { type: Number, default: 0 },

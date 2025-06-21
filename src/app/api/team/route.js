@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import TeamModel from "../../../../models/Team";
+import connectMongoDB from "../../../../database/db";
 
 
 // GET all teams or by userId
 export async function GET(request) {
- 
-  const userId = request.nextUrl.searchParams.get("userId");
-
   try {
-    const query = userId ? { userId } : {};
-    const teams = await TeamModel.find(query);
+     await connectMongoDB()
+    const teams = await TeamModel.find();
     return NextResponse.json(teams);
   } catch (err) {
     return NextResponse.json({ error: "Failed to fetch teams", details: err }, { status: 500 });
@@ -19,8 +17,9 @@ export async function GET(request) {
 // POST - Add a new team
 export async function POST(request) {
  
+  await connectMongoDB()
   const body = await request.json();
-
+console.log(body);
   try {
     const team = await TeamModel.create(body);
     return NextResponse.json({ message: "Team added", team }, { status: 201 });
@@ -33,6 +32,7 @@ export async function POST(request) {
 export async function PUT(request) {
  
   const id = request.nextUrl.searchParams.get("id");
+   await connectMongoDB()
   const body = await request.json();
 
   if (!id) {
@@ -57,6 +57,7 @@ export async function DELETE(request) {
   }
 
   try {
+     await connectMongoDB()
     await TeamModel.findByIdAndDelete(id);
     return NextResponse.json({ message: "Team deleted" });
   } catch (err) {

@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const ResultSchema = new Schema(
   {
-    userId: { type: String, required: true },
+    userId: { type: String },
     category: { type: String, required: true },
     compotition: { type: String, required: true },
     resultNumber: { type: String, required: true },

@@ -1,19 +1,34 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 
-export default function Home() {
+interface Team {
+  _id: string;
+  userId: string;
+  team: string;
+  point: number;
+  totalResult: number;
+}
 
-  const teamStatus = [
-    { name: 'Palakkad', score: 621 },
-    { name: 'Kasaragod', score: 552 },
-    { name: 'Kannur', score: 500 },
-    { name: 'Thrissur', score: 347 },
-    { name: 'Wayanad', score: 308 },
-    { name: 'Kollam', score: 266 },
-    { name: 'Ernakulam', score: 252 },
-  ];
+export default function Home() {
+  const [teams, setTeams] = useState<Team[]>([]);
+
+  const fetchTeams = async () => {
+    const res = await fetch(`/api/team`);
+    const data = await res.json();
+
+    const sorted = data.sort((a: Team, b: Team) => b.point - a.point);
+    setTeams(sorted);
+  };
+
+  useEffect(() => {
+  
+     fetchTeams();
+   
+ }, []);
+
+
 
     const categoryOptions = [
     {
@@ -96,38 +111,25 @@ export default function Home() {
 
       </section>
 
-      {/* <section className="text-center  grid grid-cols-1 sm:grid-cols-3">
-        <div className="p-10 bg-[#fed766]">
-          <h2 className="text-3xl  font-bold">Team point</h2>
-        </div>
-        <div className="p-10 bg-[#d1dea1]">
-          <h2 className="text-3xl font-bold">Results</h2>
-        </div>
-        <div className="p-10 bg-[#fed766]">
-          <h2 className="text-3xl font-bold">Photos</h2>
-        </div>
-
-      </section> */}
-
-      {/* Team Status */}
-      <section className="p-4 md:px-32 md:py-12">
+  
+   {teams.length?   <section className="p-4 md:px-32 md:py-12">
         <h3 className="text-2xl md:text-4xl font-bold mb-4 border-b-1 border-gray-400 md:pb-5 pb-2">Team Status</h3>
         <div className="flex flex-col md:flex-row gap-4">
           <div className=" w-full md:w-1/2 flex justify-center items-center px-4">
           <div className='w-full md:max-w-80'>
 
-            <h4 className="text-green-700 text-2xl font-bold mb-2">After 10 Results</h4>
+            <h4 className="text-green-700 text-2xl font-bold mb-2">After {teams[0]?.totalResult} Results</h4>
               <table className='w-full text-left border-collapse max-w-80'>
-              {teamStatus.slice(0, 3).map((team, index) => (
+              {teams?.slice(0, 3)?.map((team, index) => (
                 <tr key={index}>
                   <td className=''>
                     <div className=' bg-[#d1dea1] w-10 h-10 flex justify-center items-center rounded-xl my-1'>{index + 1}</div>
                   </td>
                   <td>
-                    <span className='text-xl'>{team.name}</span>
+                    <span className='text-xl'>{team?.team}</span>
                   </td>
                   <td>
-                    <span className='text-xl text-right'>{team.score}</span></td>
+                    <span className='text-xl text-right'>{team?.point}</span></td>
                 </tr>
               ))}
 
@@ -139,21 +141,21 @@ export default function Home() {
           <div className="bg-white p-4 rounded  w-full md:w-1/2">
             <div className='w-full border-2 border-blue-300 font-bold rounded-2xl bg-blue-50 p-4'>
               <table className='w-full '>
-                {teamStatus.slice(3, 10).map((team, index) => (
+                {teams?.slice(3, 10)?.map((team, index) => (
                   <tr key={index} className='border-b-1 border-blue-200'>
                     <td className="p-4">
-                      <span className="text-md">{team.name}</span>
+                      <span className="text-md">{team?.team}</span>
 
                     </td>
                     <td className="text-right p-2">
-                      <span className="text-md">{team.score}</span>
+                      <span className="text-md">{team?.point}</span>
                     </td>
 
                   </tr>))}
               </table></div>
           </div>
         </div>
-      </section>
+      </section>:""}
 
     
 

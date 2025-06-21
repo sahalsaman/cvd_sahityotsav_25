@@ -13,7 +13,7 @@ const CompetitionSchema = new Schema(
 // Schema for category
 const CategorySchema = new Schema(
   {
-    userId: { type: String, require:true  },
+    userId: { type: String  },
     category: { type: String, required: true },
     competitions: [CompetitionSchema],
   },
