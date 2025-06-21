@@ -3,6 +3,24 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaUsers, FaTrophy, FaCheckCircle, FaClipboardList } from 'react-icons/fa';
 
+interface Result {
+  _id?: string;
+  category: string;
+  compotition: string;
+  resultNumber: string;
+  publish?: boolean;
+  f_name: string;
+  f_team: string;
+  s_name?: string;
+  s_team?: string;
+  s2_name?: string;
+  s2_team?: string;
+  t_name?: string;
+  t_team?: string;
+  t2_name?: string;
+  t2_team?: string;
+}
+
 export default function Admin() {
   const router = useRouter();
   const [teamCount, setTeamCount] = useState(0);
@@ -27,7 +45,7 @@ export default function Admin() {
       ]);
       const teams = await teamRes.json();
       const result = await resultRes.json();
-      const published= result.filter((item:any)=>item.publish===true)
+      const published= result.filter((item:Result)=>item.publish===true)
       setTeamCount(teams.length);
       setTeamPoints(teams[0].totalResult);
       setTotalResult(result.length);
