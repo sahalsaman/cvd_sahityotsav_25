@@ -6,7 +6,7 @@ export async function GET(){
     return NextResponse.json("Hello World!");
   }
   
-  export async function POST(req,res){
+  export async function POST(){
     return NextResponse.json({ message: 'Hello World! post' });
   }
   

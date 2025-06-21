@@ -122,7 +122,7 @@ export default function ResultPage() {
           </tr>
         </thead>
         <tbody>
-          {results.map((res, idx) => (
+          {results.map((res) => (
             <tr key={res._id} className="border-b">
               <td className="p-2">{res.resultNumber}</td>
               <td className="p-2">{res.category}</td>

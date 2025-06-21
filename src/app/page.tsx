@@ -163,7 +163,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="p-4 text-center bg-[#d1dea1]">
-        <p>SSF Cheruvadi - Students' Centre, Cheruvadi </p>
+        <p>SSF Cheruvadi - Students{"'"} Centre, Cheruvadi </p>
         <div className="mt-2 space-x-4">
           <a href="#">Facebook</a>
           <a href="#">Instagram</a>
