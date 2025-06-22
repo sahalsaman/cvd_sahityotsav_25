@@ -5,6 +5,8 @@ import { ICategory, ICompetition, IResult, ITeam } from './interface';
 import ResultPoster_1 from './resultPoster_1';
 import ResultPoster_2 from './resultPoster_2';
 import ResultPoster_3 from './resultPoster_3';
+import banner_img from '../assets/main-banner-common.png';
+import Image from 'next/image';
 
 export default function Home() {
   const [teams, setTeams] = useState<ITeam[]>([]);
@@ -73,7 +75,12 @@ export default function Home() {
       </header>
 
       <section className="w-full">
-        <img src="https://www.keralasahityotsav.com/images/main-banner-common.jpg" alt="Main Banner" />
+      <Image
+      src={banner_img}
+      alt="Main Banner"
+      className="w-full h-auto"
+      priority
+    />
       </section>
 
       {/* Category + Competition Selection */}
