@@ -3,6 +3,17 @@ import CompetitionModel from "../../../../models/Competition";
 import connectMongoDB from "../../../../database/db";
 import CategoryModel from '../../../../models/Category';
 
+// GET /api/competition?categoryId=abc123
+
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const categoryId = searchParams.get("categoryId");
+  await connectMongoDB();
+  const data = await CompetitionModel.find({ categoryId });
+  return NextResponse.json(data);
+}
+
+
 export async function POST(req) {
   await connectMongoDB();
   const { name, userId, categoryId } = await req.json();

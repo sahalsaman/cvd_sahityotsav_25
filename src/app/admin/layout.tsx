@@ -18,11 +18,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!userId) {
       router.push('/auth/login');
     } else {
-      fetchData(userId);
+      fetchData();
     }
   }, []);
 
-  const fetchData = async (userId:string) => {
+  const fetchData = async () => {
     try {
       const [teamRes, resultRes] = await Promise.all([
         fetch(`/api/team`),
@@ -30,7 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       ]);
       const teams = await teamRes.json();
       const result = await resultRes.json();
-      const published= result.filter((item:IResult)=>item.publish===true)
+      const published= result.filter((item:IResult)=>item.published===true)
       setTeamCount(teams.length);
       setTeamPoints(teams[0].totalResult);
       setTotalResult(result.length);

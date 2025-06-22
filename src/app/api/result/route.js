@@ -39,16 +39,22 @@ export async function POST(req) {
   return NextResponse.json(result, { status: 201 });
 }
 
-// ✅ GET Results
-export async function GET() {
+
+export async function GET(req) {
   await connectMongoDB();
 
-  const results = await ResultModel.find()
-    .populate("category", "name") // Optional: populate category name
-    .populate("competition", "name"); // Optional: populate competition name
+  const { searchParams } = new URL(req.url);
+  const competitionId = searchParams.get("competitionId");
+
+  const filter = competitionId ? { competitionId } : {};
+
+  const results = await ResultModel.find(filter)
+    .populate("categoryId", "name")
+    .populate("competitionId", "name");
 
   return NextResponse.json(results);
 }
+
 
 // ✅ EDIT Result
 export async function PUT(req) {
