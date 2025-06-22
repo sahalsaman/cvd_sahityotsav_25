@@ -2,6 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { ICategory, ICompetition, IResult, ITeam } from './interface';
+import ResultPoster_1 from './resultPoster_1';
+import ResultPoster_2 from './resultPoster_2';
+import ResultPoster_3 from './resultPoster_3';
 
 export default function Home() {
   const [teams, setTeams] = useState<ITeam[]>([]);
@@ -105,17 +108,20 @@ export default function Home() {
 
         {/* Result Display */}
         {results.length > 0 && (
-          <div className="mt-6 bg-white rounded shadow p-4">
-            <h3 className="text-xl font-semibold mb-4">Result List</h3>
-            <ul className="space-y-2">
-              {results.map((r, index) => (
-                <li key={r._id} className="border p-2 rounded">
-                  <div className="font-semibold">{index + 1}. {r.f_name} ({r.f_team})</div>
-                  {r.s_name && <div>2nd: {r.s_name} ({r.s_team})</div>}
-                  {r.t_name && <div>3rd: {r.t_name} ({r.t_team})</div>}
-                </li>
-              ))}
-            </ul>
+          <div className='grid md:grid-cols-3  gap-5'>
+            <ResultPoster_1
+              imageSrc="https://www.keralasahityotsav.com/result/TEMP-24-2.png"
+              result={results[0]}
+            />
+            <ResultPoster_2
+              imageSrc="https://www.keralasahityotsav.com/result/TEMP-24-1.png"
+              result={results[0]}
+              textColor="black"
+            />
+            <ResultPoster_3
+              imageSrc="https://www.keralasahityotsav.com/result/TEMP-24-3.png"
+              result={results[0]}
+            />
           </div>
         )}
       </section>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import ResultModel from "../../../../models/Result";
 import CompetitionModel from "../../../../models/Competition";
 import connectMongoDB from "../../../../database/db";
+import mongoose from "mongoose";
 
 
 export async function POST(req) {
@@ -21,8 +22,8 @@ export async function POST(req) {
     );
   }
 
-  data.competition=data.competitionId
-  data.category=data.categoryId
+  data.competition = new mongoose.Types.ObjectId(data.competitionId);
+  data.category = new mongoose.Types.ObjectId(data.categoryId);
 
   // ✅ Create result
   const result = await ResultModel.create(data);
@@ -49,8 +50,8 @@ export async function GET(req) {
   const filter = competitionId ? { competitionId } : {};
 
   const results = await ResultModel.find(filter)
-    .populate("categoryId", "name")
-    .populate("competitionId", "name");
+    .populate("category", "name")
+    .populate("competition", "name");
 
   return NextResponse.json(results);
 }
