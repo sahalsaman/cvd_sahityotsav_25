@@ -231,41 +231,96 @@ export default function ResultPage() {
 
             {/* Winners */}
             <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: '1.', name: 'f_name', team: 'f_team' },
-                { label: '2.', name: 's_name', team: 's_team' },
-                { label: '3.', name: 't_name', team: 't_team' },
-              ].map((item, idx) => (
-                <div key={idx} className="contents">
-                  <div className="flex items-end gap-2">
-                    <span className="text-xl">{item.label}</span>
-                    <input
-                      type="text"
-                      placeholder={`Name`}
-                      value={(formData as any)[item.name] || ''}
-                      onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, [item.name]: e.target.value }))
-                      }
-                      className="border p-2 rounded w-full"
-                    />
-                  </div>
-                  <select
-                    value={(formData as any)[item.team] || ''}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, [item.team]: e.target.value }))
-                    }
-                    className="border p-2 rounded"
-                  >
-                    <option value="">Select Team</option>
-                    {teams.map((team) => (
-                      <option key={team._id} value={team.team}>
-                        {team.team}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-            </div>
+  {/* 1st Place */}
+  <div className="contents">
+    <div className="flex items-end gap-2">
+      <span className="text-xl">1.</span>
+      <input
+        type="text"
+        placeholder="Name"
+        value={formData.f_name || ''}
+        onChange={(e) =>
+          setFormData((prev) => ({ ...prev, f_name: e.target.value }))
+        }
+        className="border p-2 rounded w-full"
+      />
+    </div>
+    <select
+      value={formData.f_team || ''}
+      onChange={(e) =>
+        setFormData((prev) => ({ ...prev, f_team: e.target.value }))
+      }
+      className="border p-2 rounded"
+    >
+      <option value="">Select Team</option>
+      {teams.map((team) => (
+        <option key={team._id} value={team.team}>
+          {team.team}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* 2nd Place */}
+  <div className="contents">
+    <div className="flex items-end gap-2">
+      <span className="text-xl">2.</span>
+      <input
+        type="text"
+        placeholder="Name"
+        value={formData.s_name || ''}
+        onChange={(e) =>
+          setFormData((prev) => ({ ...prev, s_name: e.target.value }))
+        }
+        className="border p-2 rounded w-full"
+      />
+    </div>
+    <select
+      value={formData.s_team || ''}
+      onChange={(e) =>
+        setFormData((prev) => ({ ...prev, s_team: e.target.value }))
+      }
+      className="border p-2 rounded"
+    >
+      <option value="">Select Team</option>
+      {teams.map((team) => (
+        <option key={team._id} value={team.team}>
+          {team.team}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* 3rd Place */}
+  <div className="contents">
+    <div className="flex items-end gap-2">
+      <span className="text-xl">3.</span>
+      <input
+        type="text"
+        placeholder="Name"
+        value={formData.t_name || ''}
+        onChange={(e) =>
+          setFormData((prev) => ({ ...prev, t_name: e.target.value }))
+        }
+        className="border p-2 rounded w-full"
+      />
+    </div>
+    <select
+      value={formData.t_team || ''}
+      onChange={(e) =>
+        setFormData((prev) => ({ ...prev, t_team: e.target.value }))
+      }
+      className="border p-2 rounded"
+    >
+      <option value="">Select Team</option>
+      {teams.map((team) => (
+        <option key={team._id} value={team.team}>
+          {team.team}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
 
             <div className="mt-4 flex justify-end gap-2">
               <button onClick={()=>resetForm(false)} className="px-4 py-2 rounded border">
