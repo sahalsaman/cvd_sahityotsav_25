@@ -3,8 +3,7 @@ import TeamModel from "../../../../models/Team";
 import connectMongoDB from "../../../../database/db";
 
 
-// GET all teams or by userId
-export async function GET(request) {
+export async function GET() {
   try {
      await connectMongoDB()
     const teams = await TeamModel.find();

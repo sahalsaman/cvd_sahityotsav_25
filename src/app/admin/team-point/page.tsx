@@ -2,17 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ITeam } from '@/app/interface';
 
-interface Team {
-  _id: string;
-  userId: string;
-  team: string;
-  point: number;
-  totalResult: number;
-}
+
 
 export default function TeamPointPage() {
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<ITeam[]>([]);
   const [editData, setEditData] = useState<Record<string, number>>({});
   const [newTotalResult, setNewTotalResult] = useState('');
   const router = useRouter();
@@ -20,23 +15,23 @@ export default function TeamPointPage() {
   useEffect(() => {
      userId = localStorage.getItem('cvdsahiAuth');
     if (!userId) {
-      router.push('/admin/login');
+      router.push('/auth/login');
     } else {
       fetchTeams();
     }
   }, []);
 
   const fetchTeams = async () => {
-    const res = await fetch(`/api/team?userId=${userId}`);
+    const res = await fetch("/api/team");
     const data = await res.json();
 
     // Sort teams by point descending
-    const sorted = data.sort((a: Team, b: Team) => b.point - a.point);
+    const sorted = data.sort((a: ITeam, b: ITeam) => b.point - a.point);
     setTeams(sorted);
 
     // Pre-fill edit data
     const pointsMap: Record<string, number> = {};
-    sorted.forEach((team: Team) => {
+    sorted.forEach((team: ITeam) => {
       pointsMap[team._id] = team.point;
     });
     setEditData(pointsMap);
@@ -71,7 +66,7 @@ export default function TeamPointPage() {
   };
 
   return (
-    <div className="p-10 max-w-5xl mx-auto">
+    <div className="x-auto">
       <div className="flex justify-between items-center mb-6">
       <h1 className="text-2xl font-bold">Team Point</h1>
         <div className="flex gap-2 items-center">

@@ -21,14 +21,14 @@ export default function TeamListPage() {
   useEffect(() => {
      userId = localStorage.getItem('cvdsahiAuth');
     if (!userId) {
-      router.push('/admin/login');
+      router.push('/auth/login');
     } else {
       fetchTeams();
     }
   }, []);
 
   const fetchTeams = async () => {
-    const res = await fetch(`/api/team?userId=${userId}`);
+    const res = await fetch(`/api/team`);
     const data = await res.json();
     setTeams(data);
   };
@@ -77,10 +77,8 @@ export default function TeamListPage() {
   };
 
   return (
-    <div className="p-10 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Team Management</h1>
-
-      {/* Add Team */}
+    <div className="mx-auto">
+     
       <div className="flex gap-3 mb-6">
         <input
           type="text"
@@ -97,7 +95,7 @@ export default function TeamListPage() {
 
       {/* Team Table */}
       <table className="w-full border text-left">
-        <thead className="bg-gray-100">
+        <thead className="bg-gray-200">
           <tr>
             <th className="p-3">Team</th>
             <th className="p-3">Actions</th>

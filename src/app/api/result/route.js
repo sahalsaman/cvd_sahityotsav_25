@@ -1,76 +1,106 @@
 import { NextResponse } from "next/server";
 import ResultModel from "../../../../models/Result";
-import CategoryModel from "../../../../models/Category";
+import CompetitionModel from "../../../../models/Competition";
 import connectMongoDB from "../../../../database/db";
-// ✅ ADD Result
+
+
 export async function POST(req) {
+  await connectMongoDB();
   const data = await req.json();
-   await connectMongoDB()
+
+  // Validate required fields
+  const requiredFields = [
+    'userId', 'categoryId', 'competitionId',
+    'resultNumber', 'f_name', 'f_team'
+  ];
+  const missingFields = requiredFields.filter(field => !data[field]);
+  if (missingFields.length > 0) {
+    return NextResponse.json(
+      { error: `Missing fields: ${missingFields.join(", ")}` },
+      { status: 400 }
+    );
+  }
+
+  data.competition=data.competitionId
+  data.category=data.categoryId
+
+  // ✅ Create result
   const result = await ResultModel.create(data);
 
-  // Update Category's resultAdded flag
-  const category = await CategoryModel.findOne({ category: data.category });
-  if (category) {
-    const index = category.competitions.findIndex(item => item.name === data.compotition);
-    if (index !== -1) {
-      category.competitions[index].resultAdded = true;
-      await category.save();
-    }
+  // ✅ Update Competition: set resultAdded = true
+  if (data.competitionId) {
+    await CompetitionModel.findByIdAndUpdate(
+      data.competitionId,
+      { resultAdded: true },
+      { new: true }
+    );
   }
 
   return NextResponse.json(result, { status: 201 });
 }
 
 // ✅ GET Results
-export async function GET(req) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId');
-   await connectMongoDB()
-  const results = await ResultModel.find({ userId });
+export async function GET() {
+  await connectMongoDB();
+
+  const results = await ResultModel.find()
+    .populate("category", "name") // Optional: populate category name
+    .populate("competition", "name"); // Optional: populate competition name
+
   return NextResponse.json(results);
 }
 
 // ✅ EDIT Result
 export async function PUT(req) {
   const { searchParams } = new URL(req.url);
-  const id = searchParams.get('id');
-  const publish = searchParams.get('publish');
-   await connectMongoDB()
+  const id = searchParams.get("id");
+  const publish = searchParams.get("publish");
+
+  await connectMongoDB();
+
   if (publish) {
-    const updated = await ResultModel.findByIdAndUpdate(id, {
-      publish: publish === "true"
-    }, { new: true });
+    // Only updating publish status
+    const updated = await ResultModel.findByIdAndUpdate(
+      id,
+      { published: publish === "true" },
+      { new: true }
+    );
+
+    if (updated?.competitionId) {
+      await CompetitionModel.findByIdAndUpdate(
+        updated.competitionId,
+        { published: publish === "true" }
+      );
+    }
+
     return NextResponse.json(updated);
   }
 
+  // Full update
   const data = await req.json();
 
   const oldResult = await ResultModel.findById(id);
   const updated = await ResultModel.findByIdAndUpdate(id, data, { new: true });
 
-  // Check and update old category competition resultAdded = false if no more result exists
-  if (oldResult) {
+  // 🧹 Clean old competition's resultAdded if no other results exist
+  if (oldResult?.competitionId && oldResult.competitionId !== data.competitionId) {
     const others = await ResultModel.find({
       _id: { $ne: id },
-      category: oldResult.category,
-      compotition: oldResult.compotition
+      competitionId: oldResult.competitionId,
     });
+
     if (others.length === 0) {
-      const oldCategory = await CategoryModel.findOne({ category: oldResult.category });
-      const oldIndex = oldCategory?.competitions.findIndex(item => item.name === oldResult.compotition);
-      if (oldCategory && oldIndex !== -1) {
-        oldCategory.competitions[oldIndex].resultAdded = false;
-        await oldCategory.save();
-      }
+      await CompetitionModel.findByIdAndUpdate(oldResult.competitionId, {
+        resultAdded: false,
+      });
     }
   }
 
-  // Set resultAdded = true for new competition
-  const category = await CategoryModel.findOne({ category: data.category });
-  const index = category?.competitions.findIndex(item => item.name === data.compotition);
-  if (category && index !== -1) {
-    category.competitions[index].resultAdded = true;
-    await category.save();
+  // ✅ Mark new competition's resultAdded = true
+  if (data.competitionId) {
+    await CompetitionModel.findByIdAndUpdate(data.competitionId, {
+      resultAdded: true,
+    });
   }
 
   return NextResponse.json(updated);
@@ -79,26 +109,23 @@ export async function PUT(req) {
 // ✅ DELETE Result
 export async function DELETE(req) {
   const { searchParams } = new URL(req.url);
-  const id = searchParams.get('id');
-   await connectMongoDB()
+  const id = searchParams.get("id");
+
+  await connectMongoDB();
+
   const result = await ResultModel.findByIdAndDelete(id);
 
-  if (result) {
+  if (result?.competitionId) {
     const others = await ResultModel.find({
-      category: result.category,
-      compotition: result.compotition
+      competitionId: result.competitionId,
     });
 
     if (others.length === 0) {
-      
-      const category = await CategoryModel.findOne({ category: result.category });
-      const index = category?.competitions.findIndex(item => item.name === result.compotition);
-      if (category && index !== -1) {
-        category.competitions[index].resultAdded = false;
-        await category.save();
-      }
+      await CompetitionModel.findByIdAndUpdate(result.competitionId, {
+        resultAdded: false,
+      });
     }
   }
 
-  return NextResponse.json({ message: 'Deleted' });
+  return NextResponse.json({ message: "Deleted" });
 }

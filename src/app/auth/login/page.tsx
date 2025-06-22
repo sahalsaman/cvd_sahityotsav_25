@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     if (data.success) {
       localStorage.setItem('cvdsahiAuth', data?.user?._id); 
-      router.push('/admin');
+      router.push('/admin/team');
     } else {
       setError(data.message);
     }

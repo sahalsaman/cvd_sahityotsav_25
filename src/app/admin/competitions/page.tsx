@@ -1,109 +1,101 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-interface Competition {
+interface ICategory {
+  _id: string;
   name: string;
-  resultAdded: boolean;
+  competitions: ICompetition[];
 }
 
-interface Category {
+interface ICompetition {
   _id: string;
-  category: string;
-  competitions: Competition[];
+  name: string;
+  published: boolean;
+  resultAdded: boolean;
+  categoryId: string;
 }
 
 export default function CategoryCompetitionPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
   const [newCategory, setNewCategory] = useState('');
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
   const [editCategoryName, setEditCategoryName] = useState('');
-  const [editingComp, setEditingComp] = useState<{ catId: string; index: number } | null>(null);
+  const [editCompId, setEditCompId] = useState<string | null>(null);
   const [editCompName, setEditCompName] = useState('');
 
+  const userId = typeof window !== 'undefined' ? localStorage.getItem('cvdsahiAuth') : '';
 
-  const fetchCategories = async () => {
-    const res = await fetch(`/api/category?userId=${userId}`);
-    const data = await res.json();
-    setCategories(data);
+  const fetchAll = async () => {
+    const res = await fetch('/api/category');
+    const cats = await res.json();
+    setCategories(cats);
   };
 
-  let userId:string|null=''
   useEffect(() => {
-     userId = localStorage.getItem('cvdsahiAuth');
-    fetchCategories();
+    fetchAll();
   }, []);
 
   const handleAddCategory = async () => {
     if (!newCategory || !userId) return;
     await fetch('/api/category', {
       method: 'POST',
-      body: JSON.stringify({ category: newCategory, userId }),
+      body: JSON.stringify({ name: newCategory, userId }),
       headers: { 'Content-Type': 'application/json' },
     });
     setNewCategory('');
-    fetchCategories();
+    fetchAll();
   };
 
-  const handleDeleteCategory = async (id: string, competitions: Competition[]) => {
-    const hasPublished = competitions.some((c) => c.resultAdded);
-    const hasAny = competitions.length > 0;
-    if (hasPublished || hasAny) return;
-
-    if (!confirm('Are you sure you want to delete this category?')) return;
+  const handleDeleteCategory = async (id: string, competitions: ICompetition[]) => {
+    const hasComp = competitions.length > 0;
+    if (hasComp || !confirm('Delete this category?')) return;
     await fetch(`/api/category?id=${id}`, { method: 'DELETE' });
-    fetchCategories();
+    fetchAll();
   };
 
-  const handleAddCompetition = async (id: string, compName: string) => {
-    if (!compName.trim()) return;
-    await fetch(`/api/category/competition?id=${id}`, {
+  const handleAddCompetition = async (categoryId: string, name: string) => {
+    if (!name.trim()) return;
+    await fetch('/api/competition', {
       method: 'POST',
-      body: JSON.stringify({ name: compName }),
+      body: JSON.stringify({ categoryId, name, userId }),
       headers: { 'Content-Type': 'application/json' },
     });
-    fetchCategories();
+    fetchAll();
   };
 
-  const handleDeleteCompetition = async (categoryId: string, name: string) => {
-    if (!confirm(`Delete competition "${name}"?`)) return;
-    await fetch(`/api/category/competition/delete?id=${categoryId}`, {
-      method: 'POST',
-      body: JSON.stringify({ name }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-    fetchCategories();
+  const handleDeleteCompetition = async (id: string) => {
+    if (!confirm('Delete this competition?')) return;
+    await fetch(`/api/competition?id=${id}`, { method: 'DELETE' });
+    fetchAll();
   };
 
   const handleEditCategory = async () => {
-    if (!editCategoryName || !editingCatId) return;
+    if (!editingCatId || !editCategoryName) return;
     await fetch(`/api/category?id=${editingCatId}`, {
       method: 'PUT',
-      body: JSON.stringify({ category: editCategoryName }),
+      body: JSON.stringify({ name: editCategoryName }),
       headers: { 'Content-Type': 'application/json' },
     });
     setEditingCatId(null);
     setEditCategoryName('');
-    fetchCategories();
+    fetchAll();
   };
 
   const handleEditCompetition = async () => {
-    if (!editingComp || !editCompName) return;
-    const { catId, index } = editingComp;
-
-    await fetch(`/api/category/competition?id=${catId}`, {
+    if (!editCompId || !editCompName) return;
+    await fetch(`/api/competition?id=${editCompId}`, {
       method: 'PUT',
-      body: JSON.stringify({ index, newName: editCompName }),
+      body: JSON.stringify({ name: editCompName }),
       headers: { 'Content-Type': 'application/json' },
     });
-    setEditingComp(null);
+    setEditCompId(null);
     setEditCompName('');
-    fetchCategories();
+    fetchAll();
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      {/* Add Category */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-6">
+    <div className="p-5">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
           type="text"
           placeholder="New Category"
@@ -111,53 +103,47 @@ export default function CategoryCompetitionPage() {
           value={newCategory}
           onChange={(e) => setNewCategory(e.target.value)}
         />
-        <button
-          onClick={handleAddCategory}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
+        <button onClick={handleAddCategory} className="bg-blue-600 text-white px-4 py-2 rounded">
           Add Category
         </button>
       </div>
 
-      {/* Categories */}
-      <div className="grid md:grid-cols-3 gap-5">
+      <div className="grid md:grid-cols-3 gap-6">
         {categories.map((cat) => {
-          const hasPublished = cat.competitions.some((c) => c.resultAdded);
-          const hasCompetitions = cat.competitions.length > 0;
+          const comps = cat.competitions || [];
+          const hasResults = comps.some((c) => c.resultAdded);
+
           return (
-            <div key={cat._id} className="border rounded-lg shadow-md">
+            <div key={cat._id} className="border rounded shadow-md">
               <div className="flex justify-between items-center bg-gray-100 p-4">
                 {editingCatId === cat._id ? (
-                  <div className="flex gap-2 w-full">
+                  <>
                     <input
                       value={editCategoryName}
                       onChange={(e) => setEditCategoryName(e.target.value)}
                       className="border p-1 w-full"
                     />
-                    <button
-                      onClick={handleEditCategory}
-                      className="bg-green-600 text-white px-3 py-1 rounded text-sm"
-                    >
+                    <button onClick={handleEditCategory} className="bg-green-500 text-white px-2 rounded">
                       Save
                     </button>
-                  </div>
+                  </>
                 ) : (
                   <>
-                    <h2 className="text-lg font-bold">{cat.category}</h2>
+                    <h2 className="font-semibold">{cat.name}</h2>
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
                           setEditingCatId(cat._id);
-                          setEditCategoryName(cat.category);
+                          setEditCategoryName(cat.name);
                         }}
-                        className="text-blue-600 hover:underline text-sm"
+                        className="text-blue-600 text-sm"
                       >
                         Edit
                       </button>
-                      {!hasPublished && !hasCompetitions && (
+                      {!hasResults && comps.length === 0 && (
                         <button
-                          onClick={() => handleDeleteCategory(cat._id, cat.competitions)}
-                          className="text-red-600 hover:underline text-sm"
+                          onClick={() => handleDeleteCategory(cat._id, comps)}
+                          className="text-red-600 text-sm"
                         >
                           Delete
                         </button>
@@ -167,56 +153,54 @@ export default function CategoryCompetitionPage() {
                 )}
               </div>
 
-              {/* Competitions */}
-              <div className="p-4 space-y-2">
-                {cat.competitions?.length > 0 ? (
-                  cat.competitions.map((comp, idx) => (
-                    <div key={idx} className="flex justify-between items-center border p-2 rounded">
-                      {editingComp && editingComp.catId === cat._id && editingComp.index === idx ? (
-                        <div className="flex gap-2 w-full">
-                          <input
-                            value={editCompName}
-                            onChange={(e) => setEditCompName(e.target.value)}
-                            className="border p-1 w-full"
-                          />
-                          <button
-                            onClick={handleEditCompetition}
-                            className="bg-green-600 text-white px-3 py-1 rounded text-sm"
-                          >
-                            Save
-                          </button>
+              <div className="p-3 space-y-2">
+                {comps.map((comp) => (
+                  <div key={comp._id} className="flex justify-between items-center border p-2 rounded">
+                    {editCompId === comp._id ? (
+                      <>
+                        <input
+                          value={editCompName}
+                          onChange={(e) => setEditCompName(e.target.value)}
+                          className="border p-1 w-full"
+                        />
+                        <button
+                          onClick={handleEditCompetition}
+                          className="bg-green-500 text-white px-2 rounded text-sm"
+                        >
+                          Save
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span>{comp.name}</span>
+                        <div className="flex gap-2">
+                          {comp.resultAdded && <span className="text-green-600 text-xs">Result Added</span>}
+                          {comp.published && <span className="text-blue-600 text-xs">Published</span>}
+                          {!comp.resultAdded && !comp.published && (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setEditCompId(comp._id);
+                                  setEditCompName(comp.name);
+                                }}
+                                className="text-blue-500 text-sm"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteCompetition(comp._id)}
+                                className="text-red-500 text-sm"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
                         </div>
-                      ) : (
-                        <>
-                          <span>
-                            {comp.name} {comp.resultAdded && <span className="text-green-500">(Published)</span>}
-                          </span>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                setEditingComp({ catId: cat._id, index: idx });
-                                setEditCompName(comp.name);
-                              }}
-                              className="text-blue-500 text-sm"
-                            >
-                              Edit
-                            </button>
-                           {!comp.resultAdded&& <button
-                              onClick={() => handleDeleteCompetition(cat._id, comp.name)}
-                              className="text-sm text-red-500 hover:underline"
-                            >
-                              Delete
-                            </button>}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500">No competitions</p>
-                )}
+                      </>
+                    )}
+                  </div>
+                ))}
 
-                {/* Add Competition */}
                 <div className="flex gap-2 mt-2">
                   <input
                     type="text"
@@ -224,7 +208,8 @@ export default function CategoryCompetitionPage() {
                     className="border p-2 rounded w-full"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
-                        handleAddCompetition(cat._id, (e.target as HTMLInputElement).value);
+                        const name = (e.target as HTMLInputElement).value;
+                        handleAddCompetition(cat._id, name);
                         (e.target as HTMLInputElement).value = '';
                       }
                     }}

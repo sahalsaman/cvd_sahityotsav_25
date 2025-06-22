@@ -1,37 +1,22 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FaUsers, FaTrophy, FaCheckCircle, FaClipboardList } from 'react-icons/fa';
+import { IResult } from '../interface';
 
-interface Result {
-  _id?: string;
-  category: string;
-  compotition: string;
-  resultNumber: string;
-  publish?: boolean;
-  f_name: string;
-  f_team: string;
-  s_name?: string;
-  s_team?: string;
-  s2_name?: string;
-  s2_team?: string;
-  t_name?: string;
-  t_team?: string;
-  t2_name?: string;
-  t2_team?: string;
-}
 
-export default function Admin() {
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [teamCount, setTeamCount] = useState(0);
   const [teamPoints, setTeamPoints] = useState(0);
   const [totalResult, setTotalResult] = useState(0);
   const [publishedResults, setPublishedResults] = useState(0);
- 
+  const pathname = usePathname();
   useEffect(() => {
     const userId = localStorage.getItem('cvdsahiAuth');
     if (!userId) {
-      router.push('/admin/login');
+      router.push('/auth/login');
     } else {
       fetchData(userId);
     }
@@ -40,12 +25,12 @@ export default function Admin() {
   const fetchData = async (userId:string) => {
     try {
       const [teamRes, resultRes] = await Promise.all([
-        fetch(`/api/team?userId=${userId}`),
-        fetch(`/api/result?userId=${userId}`),
+        fetch(`/api/team`),
+        fetch(`/api/result`),
       ]);
       const teams = await teamRes.json();
       const result = await resultRes.json();
-      const published= result.filter((item:Result)=>item.publish===true)
+      const published= result.filter((item:IResult)=>item.publish===true)
       setTeamCount(teams.length);
       setTeamPoints(teams[0].totalResult);
       setTotalResult(result.length);
@@ -86,7 +71,7 @@ export default function Admin() {
         <button
           onClick={() => {
             localStorage.removeItem('cvdsahiAuth');
-            router.push('/admin/login');
+            router.push('/auth/login');
           }}
           className="bg-green-600 text-white px-4 py-2 rounded"
         >
@@ -122,13 +107,19 @@ export default function Admin() {
             <div
               key={idx}
               onClick={() => router.push(card.path)}
-              className="cursor-pointer p-6 bg-green-100 rounded-lg shadow hover:shadow-lg text-center"
+             
+              className={`
+                 cursor-pointer p-6 bg-green-100 rounded-lg shadow hover:shadow-lg text-center
+                ${pathname === card.path && "bg-green-700 text-white font-semibold"}`
+              }
             >
               <h2 className="text-xl font-semibold">{card.title}</h2>
             </div>
           ))}
         </div>
       </div>
+
+      <main className='pt-10 md:px-32 px-5'>{children}</main>
     </div>
   );
 }
