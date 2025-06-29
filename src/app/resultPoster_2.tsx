@@ -49,31 +49,30 @@ const ResultPoster_2 = ({
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
   
-      const marginLeft = 700;
-      let currentY = canvas.height * 0.55;
-      const lineSpacing = 150;
+      const marginLeft = 150;
+      let currentY = canvas.height * 0.45;
   
       // Category
-      ctx.font = 'bold 120px sans-serif';
+      ctx.font = 'bold 50px sans-serif';
       ctx.fillText(result.category?.name ?? '', marginLeft, currentY);
   
       // Competition
-      currentY += lineSpacing;
-      ctx.font = 'bold 110px "Brush Script MT", cursive';
+      currentY += 50;
+      ctx.font = ' 30px sans-serif';
       ctx.fillText(result.competition?.name ?? '', marginLeft, currentY);
   
-      currentY += lineSpacing;
+      currentY += 100;
   
       // Helper to draw bold + regular inline
       const drawNameAndTeam = (label: string, name: string, team: string) => {
-        ctx.font = 'bold 100px sans-serif';
+        ctx.font = 'bold 30px sans-serif';
         const nameText = `${label}. ${name}`;
         ctx.fillText(nameText, marginLeft, currentY);
         const nameWidth = ctx.measureText(nameText).width;
   
-        ctx.font = '100px sans-serif';
-        ctx.fillText(` ${team}`, marginLeft + nameWidth + 20, currentY);
-        currentY += lineSpacing;
+        ctx.font = '25px sans-serif';
+        ctx.fillText(` ${team}`, marginLeft + nameWidth + 10, currentY);
+        currentY += 50;
       };
   
       // 1st Place
@@ -93,9 +92,9 @@ const ResultPoster_2 = ({
 
 
       // Result number (centered visually)
-      ctx.font = 'bold 550px sans-serif';
+      ctx.font = 'bold 150px sans-serif';
       ctx.globalAlpha = 0.5; // Set opacity to 0.5
-      ctx.fillText(`#${result.resultNumber}`, 700, canvas.height * 0.4);
+      ctx.fillText(`#${result.resultNumber}`, 150, canvas.height * 0.32);
     };
   };
 
