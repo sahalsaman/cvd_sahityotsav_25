@@ -7,6 +7,9 @@ import ResultPoster_2 from './resultPoster_2';
 import ResultPoster_3 from './resultPoster_3';
 import banner_img from '../assets/main-banner-common.png';
 import Image from 'next/image';
+import img1 from '../assets/TEMP-25-1.png';
+import img2 from '../assets/TEMP-24-2 (1).png';
+import img3 from '../assets/TEMP-24-3 (1).png';
 
 export default function Home() {
   const [teams, setTeams] = useState<ITeam[]>([]);
@@ -117,16 +120,16 @@ export default function Home() {
         {results.length > 0 && (
           <div className='grid md:grid-cols-3  gap-5'>
             <ResultPoster_1
-              imageSrc="https://www.keralasahityotsav.com/result/TEMP-24-2.png"
+              imageSrc={`${img1}`}
               result={results[0]}
             />
             <ResultPoster_2
-              imageSrc="https://www.keralasahityotsav.com/result/TEMP-24-1.png"
+              imageSrc={`${img2}`}
               result={results[0]}
               textColor="black"
             />
             <ResultPoster_3
-              imageSrc="https://www.keralasahityotsav.com/result/TEMP-24-3.png"
+              imageSrc={`${img3}`}
               result={results[0]}
             />
           </div>
