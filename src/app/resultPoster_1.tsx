@@ -55,8 +55,8 @@ console.log(result);
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
   
-      const marginLeft = 700;
-      let currentY = canvas.height * 0.22;
+      const marginLeft = 840;
+      let currentY = canvas.height * 0.23;
   
       // Category
       ctx.font = 'bold 70px sans-serif';
@@ -100,7 +100,7 @@ console.log(result);
       // Result number (centered visually)
       ctx.font = 'bold 300px sans-serif';
       ctx.globalAlpha = 0.5; // Set opacity to 0.5
-      ctx.fillText(`#${result.resultNumber}`, 350, canvas.height * 0.22);
+      ctx.fillText(`#${result.resultNumber}`, 320, canvas.height * 0.22);
     };
   };
   

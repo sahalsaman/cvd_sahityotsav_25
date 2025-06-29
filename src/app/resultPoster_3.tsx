@@ -49,7 +49,7 @@ const ResultPoster_3 = ({
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
   
-      const marginLeft = 330;
+      const marginLeft = 380;
       let currentY = canvas.height * 0.55;
   
       // Category
@@ -94,7 +94,7 @@ const ResultPoster_3 = ({
       // Result number (centered visually)
       ctx.font = 'bold 150px sans-serif';
       ctx.globalAlpha = 0.5; // Set opacity to 0.5
-      ctx.fillText(`#${result.resultNumber}`, 150, canvas.height * 0.55);
+      ctx.fillText(`#${result.resultNumber}`, 120, canvas.height * 0.55);
     };
   };
   useEffect(() => {
