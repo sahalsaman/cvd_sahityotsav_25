@@ -23,7 +23,7 @@ export default function Home() {
   // Fetch categories
   const fetchCategories = async () => {
     const res = await fetch('/api/category');
-    if (res.ok) {
+    if (res.ok) { 
       const data = await res.json();
       setCategories(data);
     }
