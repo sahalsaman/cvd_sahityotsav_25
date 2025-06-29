@@ -15,6 +15,7 @@ const ResultPoster_1 = ({
   textColor?: 'white' | 'black';
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+console.log(result);
 
   const downloadImage = () => {
     const canvas = canvasRef.current;
@@ -54,31 +55,30 @@ const ResultPoster_1 = ({
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
   
-      const marginLeft = 1800;
-      let currentY = canvas.height * 0.3;
-      const lineSpacing = 150;
+      const marginLeft = 700;
+      let currentY = canvas.height * 0.22;
   
       // Category
-      ctx.font = 'bold 120px sans-serif';
+      ctx.font = 'bold 70px sans-serif';
       ctx.fillText(result.category?.name ?? '', marginLeft, currentY);
   
       // Competition
-      currentY += lineSpacing;
-      ctx.font = 'bold 110px "Brush Script MT", cursive';
+      currentY += 80;
+      ctx.font = ' 50px sans-serif';
       ctx.fillText(result.competition?.name ?? '', marginLeft, currentY);
   
-      currentY += lineSpacing;
+      currentY += 110;
   
       // Helper to draw bold + regular inline
       const drawNameAndTeam = (label: string, name: string, team: string) => {
-        ctx.font = 'bold 100px sans-serif';
+        ctx.font = 'bold 50px sans-serif';
         const nameText = `${label}. ${name}`;
         ctx.fillText(nameText, marginLeft, currentY);
         const nameWidth = ctx.measureText(nameText).width;
   
-        ctx.font = '100px sans-serif';
+        ctx.font = '50px sans-serif';
         ctx.fillText(` ${team}`, marginLeft + nameWidth + 20, currentY);
-        currentY += lineSpacing;
+        currentY += 80;
       };
   
       // 1st Place
@@ -98,9 +98,9 @@ const ResultPoster_1 = ({
 
 
       // Result number (centered visually)
-      ctx.font = 'bold 550px sans-serif';
+      ctx.font = 'bold 300px sans-serif';
       ctx.globalAlpha = 0.5; // Set opacity to 0.5
-      ctx.fillText(`#${result.resultNumber}`, 1000, canvas.height * 0.3);
+      ctx.fillText(`#${result.resultNumber}`, 350, canvas.height * 0.22);
     };
   };
   
